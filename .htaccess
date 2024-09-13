@@ -1,0 +1,32 @@
+## IMH Default .htaccess ##
+
+#BEGIN IMH Block Bots
+RewriteEngine On
+RewriteCond %{HTTP_USER_AGENT} ^.*(SeznamBot|SemrushBot|AhrefsBot|sogou|ahrefs|MJ12bot|YandexBot|PetalBot|DotBot|bingbot|opensiteexplorer|blexbot|bytedance|gtpbot|applebot|ClaudeBot|amazonbot|Fuzz\sFaster\sU\sFool\sv2.1.0-dev).*$ [NC]
+RewriteRule .* - [F,L]
+#END IMH Block Bots
+
+# Begin XMLRPC Attack Mitigation
+RewriteEngine On
+ErrorDocument 416 "Invalid Request"
+RewriteCond %{THE_REQUEST} "^POST /xmlrpc.php"
+# End XMLRPC Attack Mitigation
+
+# Force HTTPS Redirects
+RewriteEngine On 
+RewriteCond %{HTTPS} !on 
+RewriteCond %{REQUEST_URI} !^/[0-9]+\..+\.cpaneldcv$ 
+RewriteCond %{REQUEST_URI} !^/\.well-known/pki-validation/[A-F0-9]{32}\.txt(?:\ Comodo\ DCV)?$ 
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# End HTTPS Redirects 
+
+# BEGIN WordPress
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+
+# END WordPress
